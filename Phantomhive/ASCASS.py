@@ -10,8 +10,7 @@ import requests
 import time
 import difflib
 import holidays
-#data chat bot
-from chatbot import *
+from googletrans import Translator
 #chatterbot import
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
@@ -19,14 +18,17 @@ from chatterbot.response_selection import get_first_response
 from chatterbot.comparisons import levenshtein_distance
 from chatterbot.filters import get_recent_repeated_responses
 
-#vitural assistant:
+# Vitural assistant:
 vitural_assistant = pyttsx3.init()
 voice = vitural_assistant.getProperty('voices')
-vitural_assistant.setProperty('voice',voice[1].id)
+vitural_assistant.setProperty('voice',voice[0].id)
 
-#chat bot:
-karen = ChatBot(
-    "Karen",
+# Translated:
+trans = Translator()
+
+# Chat bot:
+Ascass = ChatBot(
+    "ASCASS",
     logic_adapters = [                
         {
             "import_path": "chatterbot.logic.BestMatch",
@@ -40,16 +42,97 @@ karen = ChatBot(
     read_only = True    
 )
 
-# train:
-train_list = ListTrainer(karen)
-for key in chatbot_data.keys():
-    train_list.train(chatbot_data[key])
+# A Smart Chatbot And Support System
+bot_text_name = 'A.S.C.A.S.S.'
+bot_name = 'ASCASS' 
+user_name = 'Mr D'
+AI_pass = '2003'
+# chatbot:
+mybot = ListTrainer(Ascass)
 # holidays:
 vi_holidays = holidays.Vietnam() + holidays.US() 
 # global:
 check_i = 0
 isRunning = True
-#feature:
+list_to_train = []
+# command:
+chatbot_command = {
+    'tắt nguồn' : [
+        'tắt nguồn',
+        'ngắt kết nối',
+        'tắt kết nối',
+        'tạm biệt',
+        'tạm biệt karen',
+        'chúc ngủ ngon',
+        'ngủ ngon',
+        'tôi ra ngoài',
+        'tôi phải ra ngoài',
+        'tôi phải đi đây'        
+    ],
+    
+    'giờ' : [
+        'bây giờ là mấy giờ',
+        'mấy giờ rồi',
+        'bây giờ là'
+
+    ],
+    
+    'ngày' : [
+        'hôm nay là ngày nào',
+        'hôm nay là',
+        'hôm nay là ngày mấy',
+        'hôm nay là ngày bao nhiêu',
+        'nay là ngày bao nhiêu',
+        'nay là ngày nào',
+        'nay là ngày mấy'
+    ],
+    
+    'thời tiết' : [
+        'thời tiết hôm nay như thế nào',
+        'thời tiết hôm nay',
+        'thời tiết hôm nay như nào',
+        'thời tiết hôm nay ra sao',
+        'thời tiết như nào',
+        'thời tiết thì sao',
+        'thời tiết ra sao'
+    ],
+    
+    'thông tin' : [
+        'tìm thông tin cho tôi',
+        'cho tôi biết về',
+        'tìm thông tin về',
+        'cho tôi biết'                
+    ],
+    
+    'web' : [
+        'mở mạng cho tôi',
+        'mở website cho tôi',
+        'mở mạng',
+        'mở web',
+        'mở website',
+        'mở web cho tôi',
+        'mạng',
+        'web',
+        'website',
+        'mở youtube',
+        'mở google',
+        'mở facebook'
+    ],
+    
+    'nghỉ ngơi' : [
+        'chế độ nghỉ ngơi',
+        'ngủ trưa',
+        'nghỉ ngơi',
+        'nghỉ ngơi đi',
+        'ok nghỉ ngơi đi',
+        'im lặng',
+        'im',
+        'im miệng',
+        'im mồm'
+    ]
+}
+
+# feature:
 
 def Match_command(query):
     max_ability = 0
@@ -63,7 +146,7 @@ def Match_command(query):
     return key_choose,max_ability
 
 def speak(audio):    
-    print(bot_name + ': ' + audio)    
+    print(bot_text_name + ': ' + audio)    
     vitural_assistant.say(audio)
     vitural_assistant.runAndWait()
 
@@ -83,17 +166,16 @@ def time_now():
         speak('It is for you health')
     elif hour == 17:
         speak('You should cook for dinner')  
-    time.sleep(3) 
+    time.sleep(1) 
 
-def lock_Karen():    
-    global isRunning
-    Time = datetime.datetime.now().strftime("%I:%M:%p")    
-    hour = datetime.datetime.now().hour
-    if hour == 22 or hour == 23 or 0 <= hour <= 5:
-       speak('You must go to bed')
-       speak('It is too dangerous for your health')       
-       isRunning = False
-       return
+def lock_ASCASS():    
+    # global isRunning    
+    # hour = datetime.datetime.now().hour
+    # if hour == 22 or hour == 23 or 0 <= hour <= 5:
+    #    speak('You must go to bed')
+    #    speak('It is too dangerous for your health')       
+    #    isRunning = False
+    #    return
     speak('How can i help you?')    
          
 def today():
@@ -110,7 +192,7 @@ def check_today():
         speak('A normal day!')
     else:
         speak(check_hd)
-    time.sleep(3)
+    time.sleep(1)
 
 def Welcome():   
     hour = datetime.datetime.now().hour
@@ -123,7 +205,8 @@ def Welcome():
     elif 0 <= hour < 6:
         speak('Good Night ' + user_name)
     
-    speak('Welcome to the V.A project') 
+    speak('Welcome back')
+    speak("I am " + bot_name) 
     return     
 
 def Wikipedia():
@@ -133,7 +216,7 @@ def Wikipedia():
     url = f'https://vi.wikipedia.org/wiki/{search}'
     wb.get().open(url)
     speak(f'Here you are')
-    time.sleep(3)
+    time.sleep(1)
 
 def Youtube():
     speak('Search or Video?')
@@ -193,64 +276,9 @@ def Youtube():
                 stop = 1
                 speak('Enjoy the video!')                                 
 
-def Github():
-    speak('I will do it right now')
-    wb.get().open(f'https://github.com/')
-
 def remove_accent(text):
     return unidecode.unidecode(text)
-
-def Google():    
-    speak("What should i search?")
-    search = command().lower()
-    url = f"https://www.google.com.vn/search?q={search}"
-    wb.get().open(url)
-    speak(f'Here you are')
-
-def Facebook():
-    speak('Here you are')
-    url = f"https://www.facebook.com/"
-    wb.get().open(url)  
-
-def Messenger():
-    speak('Here you are')
-    url = f"https://www.facebook.com/messages/"
-    wb.get().open(url)
-
-def TFT():
-    speak('Here you are')
-    url = f"https://tftactics.gg/tierlist/team-comps"
-    wb.get().open(url)
-
-def codeforce():    
-    speak('Good luck!')
-    url = f"https://codeforces.com/"
-    wb.get().open(url) 
-
-def email():   
-    url = f"https://mail.google.com/mail/u/0/#inbox"   
-    wb.get().open(url)
-    speak('Here you are')
-
-def google_map():
-    speak('What place do you want to find?')
-    place = command().lower()
-    place = place.replace(" ","+")
-    url = f"https://www.google.com/maps/place/{place}"    
-    wb.get().open(url)
-    speak('Here you are') 
-
-def go_to():
-    speak('Go to where?')
-    query = command().lower()
-    if not query:
-        pass
-    place_1 = place_now.replace(" ","+")
-    place_2 = query.replace(" ","+")
-    url = f"https://www.google.com/maps/dir/{place_1}/{place_2}/"
-    wb.get().open(url)
-    speak('I found the way for you, it is the best way')
-   
+  
 def current_weather():
     speak("Where are you?")
     ow_url = "http://api.openweathermap.org/data/2.5/weather?"
@@ -278,18 +306,24 @@ def current_weather():
                                                 plz = weather_description,   )
         
         speak(content)
+        if current_temperature < 15:
+            speak("You should wear more coats")
+            speak("Or get a girlfriend")
         time.sleep(3)
     else:
         speak("Your city is not found! Please try agian!")
-
-def chat_bot(query): 
-    response = karen.get_response(query)    
-    if response.confidence < 0.65:
-        speak('i don\'t know, i\'m still learning')        
+  
+def chat_bot(query):
+    response = Ascass.get_response(query)
+    if response.confidence < 0.75:
+        speak("I'm sorry. Can you teach me?")
+        choice = input("Yes or No: ")
+        if choice == "yes":
+            train_new_chat(query)
+        else:
+            return        
     else:
-        answer = str(response)
-        speak(answer)
-    time.sleep(1) 
+        speak(str(response))
 
 def Security():
     global isRunning, check_i    
@@ -305,51 +339,74 @@ def Security():
             isRunning = False
             return
 
-def sleep_mode():    
-    speak('If you want something, just call me!')
+def sleep_mode():        
     wake_up = command_open().lower()
-    while 'dậy' not in wake_up and 'làm việc' not in wake_up and 'có ở đó' not in wake_up:
+    while 'hi' not in wake_up:
         wake_up = command_open().lower()
-    speak('I\'m back')
+    speak('How can i help you?')
     return 
 
 def open_Web():
     speak('What\'s website?')
     query = command().lower()
     if "google" in query and "map" in query:
-        google_map()
+        speak('What place do you want to find?')
+        place = command().lower()
+        place = place.replace(" ","+")
+        url = f"https://www.google.com/maps/place/{place}"    
+        wb.get().open(url)
+        speak('Here you are') 
     elif "google" in query:
-        Google()
+        speak("What should i search?")
+        search = command().lower()
+        url = f"https://www.google.com.vn/search?q={search}"
+        wb.get().open(url)
+        speak(f'Here you are')
     elif "youtube" in query:
         Youtube()
     elif "facebook" in query:
-        Facebook()
+        speak('Here you are')
+        url = f"https://www.facebook.com/"
+        wb.get().open(url) 
     elif "đấu trường chân lý" in query:
-        TFT()
-    elif "lập trình thi đấU" in query:
-        codeforce()
+        speak('Here you are')
+        url = f"https://tftactics.gg/tierlist/team-comps"
+        wb.get().open(url)
+    elif "lập trình thi đấu" in query:
+        speak('Good luck!')
+        url = f"https://codeforces.com/"
+        wb.get().open(url)
     elif "messenger" in query:
-        Messenger()    
+        speak('Here you are')
+        url = f"https://www.facebook.com/messages/"
+        wb.get().open(url)    
     elif "email" in query:
-        email()    
+        url = f"https://mail.google.com/mail/u/0/#inbox"   
+        wb.get().open(url)
+        speak('Here you are')
+    elif "github" in query or "git" in query:
+        speak('I will do it right now')
+        wb.get().open(f'https://github.com/')
     else:        
-        wb.get().open('https://www.google.com.vn/search?q={query}')
+        wb.get().open(f'https://www.google.com.vn/search?q={query}')
         speak('Here you are. I\'m not sure')
         time.sleep(3)
         return
       
     time.sleep(3)
 
-#command:
+# command:
+
 def command():
-    c = sr.Recognizer()
+    global time_count_response
+    c = sr.Recognizer()    
     with sr.Microphone() as source:
-        print("listening...")           
-        audio = c.record(source,duration=5)        
+        print("listening...")          
+        audio = c.record(source,duration=8)        
     try:
         query = c.recognize_google(audio,language = 'vi')
         print(user_name + ': ' + query)
-    except sr.UnknownValueError:                
+    except sr.UnknownValueError:              
         query = command()
         
     return query
@@ -358,32 +415,42 @@ def command_open():
     c = sr.Recognizer()
     with sr.Microphone() as source:
         print("sleeping...")             
-        audio = c.record(source,duration=6)        
+        audio = c.record(source,duration=8)        
     try:
-        query = c.recognize_google(audio,language = 'vi')        
+        query = c.recognize_google(audio,language = 'en')        
     except sr.UnknownValueError:                
         query = command_open()
         
     return query
 
 def command_user():
-    global check_i,isRunning
     c = sr.Recognizer()
     with sr.Microphone() as source:
         print("loading...")             
-        audio = c.record(source,duration=5)        
+        audio = c.record(source,duration=8)        
     try:
         query = c.recognize_google(audio,language = 'vi')
         print("PASSWORD: " + query)        
     except sr.UnknownValueError:
         query = 'none'
-        print("PASSWORD: " + query)
-        
+        print("PASSWORD: " + query)       
     return query
- 
-#KAREN:            
-def KAREN():
-    global isRunning    
+
+# train:
+
+def train_new_chat(query):
+    print("New question: " + query)
+    new_a = input("New answer: ")
+    new_a_after_trans = trans.translate(new_a,src='vi',dest='en').text
+    mybot.train([
+        query,
+        new_a_after_trans
+    ])    
+
+# Ascass: 
+           
+def ASCASS():
+    global isRunning, time_count_response   
     query = command().lower()   
     
     key_cmd,ability = Match_command(query)
@@ -392,8 +459,8 @@ def KAREN():
         key_cmd = 'chat'
         print('--Chat mode--') 
 
-    if 'tắt nguồn' in key_cmd:
-        speak('See you again Sir!')
+    if 'tắt nguồn' in key_cmd:        
+        speak('See you again ' + str(user_name))
         isRunning = False
         return               
     elif 'giờ' in key_cmd:
@@ -403,55 +470,29 @@ def KAREN():
         check_today()
     elif 'thời tiết' in key_cmd:
         current_weather()
-    elif 'ở đâu' in key_cmd:
-        place = place_now
-        place = place.replace(" ","+")
-        url = f"https://www.google.com/maps/place/{place}"    
-        wb.get().open(url)
-        speak('Here you are')
-    elif 'đi tới' in key_cmd:
-        go_to()
     elif 'thông tin' in key_cmd:
         Wikipedia()
     elif 'web' in key_cmd:
-        open_Web()    
+        open_Web() 
     elif 'nghỉ ngơi' in key_cmd:
-        sleep_mode()
+        sleep_mode() 
     else:
         chat_bot(query)
-
+  
 def run_vitural_assistant():    
     # Security()
     # if isRunning == False:
     #     quit() 
+    # train_bot()
     Welcome()    
-    lock_Karen()    
+    lock_ASCASS()    
     while isRunning:
-        KAREN()
+        ASCASS()
 
 if __name__ == '__main__':
     run_vitural_assistant()
 
-# def chat_bot(query):
-#     max_abi = 0
-#     index = 0
-#     key = 0    
-#     for i in chatbot_data.keys():
-#         data = chatbot_data[i]
-#         for k, val in enumerate(data):
-#             dif = difflib.SequenceMatcher(None,query,val).ratio()
-#             if dif > max_abi:
-#                 max_abi = round(dif,2)
-#                 index = k+1
-#                 key = i
-    
-#     if max_abi < 0.55:
-#         speak('i don\'t understand sir, i\'m still learning')
-#     else:
-#         print('Match rate = ' + str(max_abi))
-#         speak(chatbot_data[key][index])
-    
-#     time.sleep(1)        
+     
     
     
 
